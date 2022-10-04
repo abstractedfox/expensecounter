@@ -1,0 +1,35 @@
+<html>
+<body>
+<marquee>Welcome to the app!</marquee>
+<br> {{ worked }} <br>
+<br><br>
+
+<p>Add something:</p>
+<form action="" method="POST">
+{% csrf_token %}
+<p>Name:</P><br>
+<input type="text" name="name"/><br>
+<p>Description:</P><br>
+<input type="text" name="description"/><br>
+<p>Cost:</P><br>
+<input type="number" name="cost" step="any"/><br>
+<p>Time purchased:</p>
+<input type="datetime-local" name="purchase_time"/><br>
+<br>
+<input type="submit" value="Do it">
+</form>
+
+<br><br>
+
+{% if expense_items %}
+	<p>Expense items:</p>
+	<ul>
+	{% for expense_item in expense_items %}
+		<li>${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	Nothing!!!!
+{% endif %}
+</body>
+</html>
