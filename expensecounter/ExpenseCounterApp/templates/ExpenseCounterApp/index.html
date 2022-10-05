@@ -1,35 +1,76 @@
+{% load static %}
 <html>
+<head>
+	<link rel="stylesheet" href="{% static 'expensecounterapp_index.css' %}">
+</head>
 <body>
-<marquee>Welcome to the app!</marquee>
-<br> {{ worked }} <br>
-<br><br>
-
-<p>Add something:</p>
-<form action="" method="POST">
-{% csrf_token %}
-<p>Name:</P><br>
-<input type="text" name="name"/><br>
-<p>Description:</P><br>
-<input type="text" name="description"/><br>
-<p>Cost:</P><br>
-<input type="number" name="cost" step="any"/><br>
-<p>Time purchased:</p>
-<input type="datetime-local" name="purchase_time"/><br>
-<br>
-<input type="submit" value="Do it">
-</form>
+<header>
+<h1 id = "appTitle">{{ app_title }}</h1>
+</header>
 
 <br><br>
 
-{% if expense_items %}
-	<p>Expense items:</p>
-	<ul>
-	{% for expense_item in expense_items %}
-		<li>${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}</li>
-	{% endfor %}
-	</ul>
-{% else %}
-	Nothing!!!!
-{% endif %}
+<div id="newItemForm">
+	<h3>Add something:</h3>
+	<form action="" method="POST">
+	{% csrf_token %}
+	<label for="categoryDropDown">Category:</label>
+		<select name="categoryDropDown">
+			<option value="food_grocery">Food: Grocery</option>
+			<option value="food_takeout">Food: Takeout</option>
+			<option value="food_convenience">Food: Convenience Store</option>
+			<option value="one_time_important">One Time Expense (Important)</option>
+			<option value="one_time_unimportant">One Time Expense (Unimportant)</option>
+			<option value="recurring_important">Recurring Expense (Important)</option>
+			<option value="recurring_unimportant">Recurring Expense (Unimportant)</option>
+		</select>
+	</label>
+	<br>
+	<label for="name">Name:</label><br>
+	<input type="text" name="name"/><br>
+	
+	<label for="description">Description:</label><br>
+	<input type="text" name="description"/><br>
+	
+	<label for="cost">Cost:</label><br>
+	<input type="number" name="cost" step="any"/><br>
+	
+	<label for="purchase_time">Time purchased:</label>
+	<input type="date" name="purchase_time"/><br>
+	
+	<br>
+	<input type="submit" value="Submit">
+	</form>
+</div>
+
+<br><br>
+
+<div id="itemList">
+	{% if expense_items %}
+		<p>Expense items:</p><br>
+		<form action="" method="POST">
+		{% csrf_token %}
+			<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start|date:'Y-m-d' }}">
+			<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end|date:'Y-m-d' }}">
+			<input type="submit" value="Go">
+		</form>
+		<ul>
+		{% for expense_item in expense_items %}
+			<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}</li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		You haven't bought anything! That's very fiscally responsible.
+	{% endif %}
+</div>
+
+<footer>
+	<div name="debugBox">
+		<h4>Debug Info</h4><br>
+		{{ worked }} <br>
+		Date range start: {{ date_range_start|date:'Y-m-d' }}
+		<br>Date range end: {{ date_range_end|date:'Y-m-d' }}
+	</div>
+</footer>
 </body>
 </html>
