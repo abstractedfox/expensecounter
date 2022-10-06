@@ -50,13 +50,14 @@
 		<p>Expense items:</p><br>
 		<form action="" method="POST">
 		{% csrf_token %}
-			<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start|date:'Y-m-d' }}">
-			<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end|date:'Y-m-d' }}">
+			<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}">
+			<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
 			<input type="submit" value="Go">
 		</form>
 		<ul>
 		{% for expense_item in expense_items %}
-			<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}</li>
+			<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" 
+			Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}</li>
 		{% endfor %}
 		</ul>
 	{% else %}
@@ -68,8 +69,7 @@
 	<div name="debugBox">
 		<h4>Debug Info</h4><br>
 		{{ worked }} <br>
-		Date range start: {{ date_range_start|date:'Y-m-d' }}
-		<br>Date range end: {{ date_range_end|date:'Y-m-d' }}
+		
 	</div>
 </footer>
 </body>
