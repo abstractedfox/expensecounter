@@ -46,14 +46,16 @@
 <br><br>
 
 <div id="itemList">
+	<h3>Expense items:</h3><br>
+	<form action="" method="POST">
+	{% csrf_token %}
+		<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}">
+		<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
+		<input type="submit" value="Go">
+	</form>
+
 	{% if expense_items %}
-		<p>Expense items:</p><br>
-		<form action="" method="POST">
-		{% csrf_token %}
-			<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}">
-			<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
-			<input type="submit" value="Go">
-		</form>
+		
 		<ul>
 		{% for expense_item in expense_items %}
 			<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" 
