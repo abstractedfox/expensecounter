@@ -1,12 +1,14 @@
 import datetime
 from decimal import *
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import expense_item
 from django.utils import timezone
 # Create your views here.
+
+debugLog = {}
 
 appTitle = "Expense Counter" #app name displayed to the user
 
@@ -19,6 +21,7 @@ def index(request):
     date_range_end = format_date_for_html(timezone.now())
     
     ordered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
+    
     context = {'expense_items': ordered_db,
                 'worked': "Default value",
                 'app_title': appTitle,
@@ -63,7 +66,18 @@ def index(request):
     context['worked'] = "No POST data was sent"
     return HttpResponse(template.render(context, request))
     
-    
+def deleteitem(request, dbkey):
+        object = expense_item.objects.get(id=dbkey)
+        logoutput("Deleting: " + object.name)
+        object.delete()
+        return redirect('/index')
+
+
+
+
+                #Things that aren't views:
+
+
 #Use this to format dates before being sent to a template for use in a date input
 #This prevents us from having to treat dates differently whether they're passed to a template as a
 #python datetime or as already formatted for HTML (ie if they came from POST data & were then sent
@@ -85,6 +99,7 @@ def format_date_for_html(date):
 #food_grocery, food_takeout, food_convenience, one_time_important, one_time_unimportant
 #recurring_important, #recurring_unimportant
 def get_percents(date_range_start, date_range_end):
+    debug = False
     total_spend = get_total_spend(date_range_start, date_range_end, "all")
     breakdown = {'food_grocery': Decimal(0),
     'food_takeout': Decimal(0),
@@ -94,8 +109,6 @@ def get_percents(date_range_start, date_range_end):
     'recurring_important': Decimal(0),
     'recurring_unimportant': Decimal(0)}
     
-    print("Total spend:" + str(total_spend))
-    print("food_grocery spend: " + str(get_total_spend(date_range_start, date_range_end, "food_grocery")))
     
     breakdown['food_grocery'] = (get_total_spend(date_range_start, date_range_end, "food_grocery") / total_spend) * 100
     breakdown['food_takeout'] = Decimal((get_total_spend(date_range_start, date_range_end, "food_takeout")) / Decimal(total_spend)) * Decimal(100)
@@ -105,7 +118,7 @@ def get_percents(date_range_start, date_range_end):
     breakdown['recurring_important'] = get_total_spend(date_range_start, date_range_end, "recurring_important") / total_spend * 100
     breakdown['recurring_unimportant'] = get_total_spend(date_range_start, date_range_end, "recurring_unimportant") / total_spend * 100
     
-    print("The breakdown: " + str(breakdown['food_grocery']) + " " + str(breakdown['food_takeout']) + " " + str(breakdown['food_convenience']) + " " + str(breakdown['one_time_important']) + " " + str(breakdown['one_time_unimportant']) + " " + str(breakdown['recurring_important']) + " " + str(breakdown['recurring_unimportant']))
+    if (debug): print("The breakdown: " + str(breakdown['food_grocery']) + " " + str(breakdown['food_takeout']) + " " + str(breakdown['food_convenience']) + " " + str(breakdown['one_time_important']) + " " + str(breakdown['one_time_unimportant']) + " " + str(breakdown['recurring_important']) + " " + str(breakdown['recurring_unimportant']))
     
     return breakdown
     
@@ -119,7 +132,7 @@ def get_total_spend(date_range_start, date_range_end, category):
     match category:
         case "all":
             filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
-            print("Values: " + str(filtered_db.count()))
+            if (debug): print("Values: " + str(filtered_db.count()))
             for item in filtered_db:
                 if (debug): print(str(item.name))
                 total += item.cost
@@ -174,3 +187,7 @@ def get_total_spend(date_range_start, date_range_end, category):
                 if (debug): print(str(item.name))
                 total += item.cost
             return total
+            
+def logoutput(logstring):
+    debugLog.update({len(debugLog) + 1: logstring})
+    print(logstring)

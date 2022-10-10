@@ -6,4 +6,6 @@ from . import views
 app_name="ExpenseCounterApp"
 urlpatterns = [
     path('', views.index),
+    path('index', views.index),
+    path('deleteitem/<int:dbkey>', views.deleteitem),
 ]
