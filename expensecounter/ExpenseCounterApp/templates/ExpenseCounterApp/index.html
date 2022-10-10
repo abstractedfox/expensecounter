@@ -7,6 +7,25 @@
 <header>
 <h1 id = "appTitle">{{ app_title }}</h1>
 </header>
+<br><br>
+
+<form action="" method="POST">
+	{% csrf_token %}
+		<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}">
+		<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
+		<input type="submit" value="Go">
+</form>
+
+<div id="percentagesDisplay">
+	<h3>Total breakdown:</h3><br>
+	<div name="percentageDisplayLine">Food: Grocery: {{ breakdown_percents.food_grocery }}  </div>
+	<div name="percentageDisplayLine">Food: Takeout: {{ breakdown_percents.food_takeout }} </div>
+	<div name="percentageDisplayLine">Food: Convenience Store: {{ breakdown_percents.food_convenience }}</div>
+	<div name="percentageDisplayLine">One Time Expense (Important): {{ breakdown_percents.one_time_important }}</div>
+	<div name="percentageDisplayLine">One Time Expense (Unimportant): {{ breakdown_percents.one_time_unimportant }}</div>
+	<div name="percentageDisplayLine">Recurring Expense (Important): {{ breakdown_percents.recurring_important }}</div>
+	<div name="percentageDisplayLine">Recurring Expense (Unimportant): {{ breakdown_percents.recurring_unimportant }}</div>
+</div>
 
 <br><br>
 
@@ -47,12 +66,7 @@
 
 <div id="itemList">
 	<h3>Expense items:</h3><br>
-	<form action="" method="POST">
-	{% csrf_token %}
-		<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}">
-		<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
-		<input type="submit" value="Go">
-	</form>
+	
 
 	{% if expense_items %}
 		

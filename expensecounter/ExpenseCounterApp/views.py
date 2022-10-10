@@ -18,19 +18,13 @@ def index(request):
     date_range_start = format_date_for_html(two_weeks_ago)
     date_range_end = format_date_for_html(timezone.now())
     
-    #date_range_start_formatted = str(date_range_start.year) + "-" + str(date_range_start.month) + "-" + str(date_range_start.day)
-    #date_range_start_formatted = str(date_range_start.year) + "-" + str(date_range_start.month) + "-" + str(date_range_start.day)
-    #date_range_start_formatted = format_date_for_html(date_range_start)
-    #print("The: " + date_range_start_formatted)
-    
-    #ordered_db = expense_item.objects.order_by('name')
-    #ordered_db = expense_item.objects.all()
     ordered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
     context = {'expense_items': ordered_db,
                 'worked': "Default value",
                 'app_title': appTitle,
                 'date_range_start': date_range_start,
-                'date_range_end': date_range_end,}
+                'date_range_end': date_range_end,
+                'breakdown_percents': get_percents(date_range_start, date_range_end)}
     
     if request.method == "POST":
         if request.POST.get('name'):
@@ -56,12 +50,13 @@ def index(request):
             context['date_range_start'] = date_range_start
             context['date_range_end'] = date_range_end
             context['expense_items'] = ordered_db
+            context['breakdown_percents'] = get_percents(date_range_start, date_range_end)
             
             print("Start date:" + date_range_start)
             print("End date:" + date_range_end)
             context['worked'] = "Date range POST data was sent"
             
-            get_percents(date_range_start, date_range_end)
+            percents = get_percents(date_range_start, date_range_end)
             
             return HttpResponse(template.render(context, request))
     
@@ -86,23 +81,96 @@ def format_date_for_html(date):
     return date_formatted
 
 
-#Get an array of the percentage breakdown of these categories:
+#Get a dict of the percentage breakdown of these categories:
 #food_grocery, food_takeout, food_convenience, one_time_important, one_time_unimportant
 #recurring_important, #recurring_unimportant
 def get_percents(date_range_start, date_range_end):
-    date_filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
-    total_spend = get_total_spend(date_range_start, date_range_end, expense_item)
+    total_spend = get_total_spend(date_range_start, date_range_end, "all")
+    breakdown = {'food_grocery': Decimal(0),
+    'food_takeout': Decimal(0),
+    'food_convenience': Decimal(0),
+    'one_time_important': Decimal(0),
+    'one_time_unimportant': Decimal(0),
+    'recurring_important': Decimal(0),
+    'recurring_unimportant': Decimal(0)}
     
-    percentage_food_grocery = get_total_spend(date_range_start, date_range_end, date_filtered_db.filter(category="food_grocery")) / total_spend * 100
-    #print (percentage_food_grocery)
+    print("Total spend:" + str(total_spend))
+    print("food_grocery spend: " + str(get_total_spend(date_range_start, date_range_end, "food_grocery")))
     
-#Get total spending for a given date range    
-def get_total_spend(date_range_start, date_range_end, source_database):
-    date_filtered_db = source_database.objects.filter(purchase_time__range=[date_range_start, date_range_end])
+    breakdown['food_grocery'] = (get_total_spend(date_range_start, date_range_end, "food_grocery") / total_spend) * 100
+    breakdown['food_takeout'] = Decimal((get_total_spend(date_range_start, date_range_end, "food_takeout")) / Decimal(total_spend)) * Decimal(100)
+    breakdown['food_convenience'] = (get_total_spend(date_range_start, date_range_end, "food_convenience") / total_spend) * 100
+    breakdown['one_time_important'] = get_total_spend(date_range_start, date_range_end, "one_time_important") / total_spend * 100
+    breakdown['one_time_unimportant'] = get_total_spend(date_range_start, date_range_end, "one_time_unimportant") / total_spend * 100
+    breakdown['recurring_important'] = get_total_spend(date_range_start, date_range_end, "recurring_important") / total_spend * 100
+    breakdown['recurring_unimportant'] = get_total_spend(date_range_start, date_range_end, "recurring_unimportant") / total_spend * 100
+    
+    print("The breakdown: " + str(breakdown['food_grocery']) + " " + str(breakdown['food_takeout']) + " " + str(breakdown['food_convenience']) + " " + str(breakdown['one_time_important']) + " " + str(breakdown['one_time_unimportant']) + " " + str(breakdown['recurring_important']) + " " + str(breakdown['recurring_unimportant']))
+    
+    return breakdown
+    
+    
+#Get total spending for a given date range. Acceptable categories are all the categories + "all"
+def get_total_spend(date_range_start, date_range_end, category):
+    debug = False
+    
     total = Decimal(0)
     
-    for item in date_filtered_db:
-        print(str(item.name))
-        total += item.cost
+    match category:
+        case "all":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
+            print("Values: " + str(filtered_db.count()))
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
         
-    return total
+        case "food_grocery":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="food_grocery")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
+                
+        case "food_takeout":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="food_takeout")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
+                
+        case "food_convenience":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="food_convenience")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
+                
+        case "one_time_important":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="one_time_important")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
+                        
+        case "one_time_unimportant":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="one_time_unimportant")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
+                
+                        
+        case "recurring_important":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="recurring_important")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
+                        
+        case "recurring_unimportant":
+            filtered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end], category="recurring_unimportant")
+            for item in filtered_db:
+                if (debug): print(str(item.name))
+                total += item.cost
+            return total
