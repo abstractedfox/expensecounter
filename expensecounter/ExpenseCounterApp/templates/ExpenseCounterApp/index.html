@@ -2,96 +2,167 @@
 <html>
 <head>
 	<link rel="stylesheet" href="{% static 'expensecounterapp_index.css' %}">
+	<script>
+		var csstime = document.querySelector(':root');
+		var computedstyles = getComputedStyle(csstime);
+		var sizemultiple = 1.6;
+		
+		var foodGrocerySize = {{ breakdown_percents.food_grocery }};
+		var foodTakeoutSize = {{ breakdown_percents.food_takeout }};
+		var foodConvenienceSize = {{ breakdown_percents.food_convenience }};
+		var oneTimeImportantSize = {{ breakdown_percents.one_time_important }};
+		var oneTimeUnimportantSize = {{ breakdown_percents.one_time_unimportant }};
+		var recurringImportantSize = {{ breakdown_percents.recurring_important }};
+		var recurringUnimportantSize = {{ breakdown_percents.recurring_unimportant }};
+		
+		
+		if (foodGrocerySize < computedstyles.getPropertyValue('--default-percent-size')){
+			foodGrocerySize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--food-grocery-size', {{ breakdown_percents.food_grocery }} * sizemultiple);
+		}
+		
+		if (foodTakeoutSize < computedstyles.getPropertyValue('--default-percent-size')){
+			foodTakeoutSize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--food-takeout-size', {{ breakdown_percents.food_takeout }} * sizemultiple);
+		}
+		
+		if (foodConvenienceSize < computedstyles.getPropertyValue('--default-percent-size')){
+			foodConvenienceSize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--food-convenience-size', {{ breakdown_percents.food_convenience }} * sizemultiple);
+		}
+		
+		if (oneTimeImportantSize < computedstyles.getPropertyValue('--default-percent-size')){
+			oneTimeImportantSize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--one-time-important-size', {{ breakdown_percents.one_time_important }} * sizemultiple);
+		}
+		
+		if (oneTimeUnimportantSize < computedstyles.getPropertyValue('--default-percent-size')){
+			oneTimeUnimportantSize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--one-time-unimportant-size', {{ breakdown_percents.one_time_unimportant }} * sizemultiple);
+		}
+		
+		if (recurringImportantSize < computedstyles.getPropertyValue('--default-percent-size')){
+			recurringImportantSize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--recurring-important-size', {{ breakdown_percents.recurring_important }} * sizemultiple);
+		}
+		
+		if (recurringUnimportantSize < computedstyles.getPropertyValue('--default-percent-size')){
+			recurringUnimportantSize = computedstyles.getPropertyValue('--default-percent-size');
+		}
+		else{
+			csstime.style.setProperty('--recurringUnimportantSize', {{ breakdown_percents.recurring_unimportant }} * sizemultiple);
+		}
+		
+	</script>
 </head>
 <body>
-<header>
-<h1 id = "appTitle">{{ app_title }}</h1>
-</header>
-<br><br>
-
-<form action="" method="POST">
-	{% csrf_token %}
-		<label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}">
-		<label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
-		<input type="submit" value="Go">
-</form>
-
-<div id="percentagesDisplay">
-	<h3>Total breakdown:</h3><br>
-	<div name="percentageDisplayLine">Food: Grocery: {{ breakdown_percents.food_grocery }}%  </div>
-	<div name="percentageDisplayLine">Food: Takeout: {{ breakdown_percents.food_takeout }}% </div>
-	<div name="percentageDisplayLine">Food: Convenience Store: {{ breakdown_percents.food_convenience }}%</div>
-	<div name="percentageDisplayLine">One Time Expense (Important): {{ breakdown_percents.one_time_important }}%</div>
-	<div name="percentageDisplayLine">One Time Expense (Unimportant): {{ breakdown_percents.one_time_unimportant }}%</div>
-	<div name="percentageDisplayLine">Recurring Expense (Important): {{ breakdown_percents.recurring_important }}%</div>
-	<div name="percentageDisplayLine">Recurring Expense (Unimportant): {{ breakdown_percents.recurring_unimportant }}%</div>
-</div>
-
-<br><br>
-
-<div id="newItemForm">
-	<h3>Add something:</h3>
-	<form action="" method="POST">
-	{% csrf_token %}
-	<label for="categoryDropDown">Category:</label>
-		<select name="categoryDropDown">
-			<option value="food_grocery">Food: Grocery</option>
-			<option value="food_takeout">Food: Takeout</option>
-			<option value="food_convenience">Food: Convenience Store</option>
-			<option value="one_time_important">One Time Expense (Important)</option>
-			<option value="one_time_unimportant">One Time Expense (Unimportant)</option>
-			<option value="recurring_important">Recurring Expense (Important)</option>
-			<option value="recurring_unimportant">Recurring Expense (Unimportant)</option>
-		</select>
-	</label>
-	<br>
-	<label for="name">Name:</label><br>
-	<input type="text" name="name"/><br>
-	
-	<label for="description">Description:</label><br>
-	<input type="text" name="description"/><br>
-	
-	<label for="cost">Cost:</label><br>
-	<input type="number" name="cost" step="any"/><br>
-	
-	<label for="purchase_time">Time purchased:</label>
-	<input type="date" name="purchase_time"/><br>
-	
-	<br>
-	<input type="submit" value="Submit">
+<div id="pagecontainer">
+	<header>
+	<h1 id = "appTitle">{{ app_title }}</h1>
+	</header>
+	<br><br>
+	<form action="" method="POST" id = "dateform">
+		{% csrf_token %}
+			<div class="datelabel"><label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}"></div>
+			<div class="datelabel"><label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
+			<input type="submit" value="Go"></div>
 	</form>
-</div>
 
-<br><br>
-
-<div id="itemList">
-	<h3>Expense items:</h3><br>
-	
-
-	{% if expense_items %}
+	<div id="percentages-display">
+		<h3>Total breakdown:</h3><br>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">Food: Grocery:</div><div id="food-grocery-percent">{{ breakdown_percents.food_grocery }}%</div></div>
 		
-		<ul>
-		{% for expense_item in expense_items %}
-			<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" 
-			Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}
-			<form action="deleteitem/{{ expense_item.pk }}" method="POST">
-				{% csrf_token %} 
-				<input type="submit" value="Delete">
-			</form>
-			</li>
-		{% endfor %}
-		</ul>
-	{% else %}
-		You haven't bought anything! That's very fiscally responsible.
-	{% endif %}
-</div>
-
-<footer>
-	<div name="debugBox">
-		<h4>Debug Info</h4><br>
-		{{ worked }} <br>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">Food: Takeout:</div><div id="food-takeout-percent">{{ breakdown_percents.food_takeout }}% </div></div>
 		
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">Food: Convenience Store:</div><div id="food-convenience-percent">{{ breakdown_percents.food_convenience }}%</div></div>
+		
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">One Time Expense (Important):</div><div id="one-time-important-percent">{{ breakdown_percents.one_time_important }}%</div></div>
+		
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">One Time Expense (Unimportant):</div><div id="one-time-unimportant-percent">{{ breakdown_percents.one_time_unimportant }}%</div></div>
+		
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">Recurring Expense (Important):</div><div id="recurring-important-percent">{{ breakdown_percents.recurring_important }}%</div></div>
+		
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">Recurring Expense (Unimportant):</div><div id="recurring-unimportant-percent">{{ breakdown_percents.recurring_unimportant }}%</div></div>
 	</div>
-</footer>
+
+	<br><br>
+
+	<div id="newItemForm">
+		<h3>Add something:</h3>
+		<form action="" method="POST">
+		{% csrf_token %}
+		<label for="categoryDropDown">Category:</label>
+			<select name="categoryDropDown">
+				<option value="food_grocery">Food: Grocery</option>
+				<option value="food_takeout">Food: Takeout</option>
+				<option value="food_convenience">Food: Convenience Store</option>
+				<option value="one_time_important">One Time Expense (Important)</option>
+				<option value="one_time_unimportant">One Time Expense (Unimportant)</option>
+				<option value="recurring_important">Recurring Expense (Important)</option>
+				<option value="recurring_unimportant">Recurring Expense (Unimportant)</option>
+			</select>
+		</label>
+		<br>
+		<label for="name">Name:</label><br>
+		<input type="text" name="name"/><br>
+		
+		<label for="description">Description:</label><br>
+		<input type="text" name="description"/><br>
+		
+		<label for="cost">Cost:</label><br>
+		<input type="number" name="cost" step="any"/><br>
+		
+		<label for="purchase_time">Time purchased:</label>
+		<input type="date" name="purchase_time"/><br>
+		
+		<br>
+		<input type="submit" value="Submit">
+		</form>
+	</div>
+
+	<br><br>
+
+	<div id="itemList">
+		<h3>Expense items:</h3><br>
+		
+
+		{% if expense_items %}
+			
+			<ul>
+			{% for expense_item in expense_items %}
+				<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" 
+				Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}
+				<form action="deleteitem/{{ expense_item.pk }}" method="POST">
+					{% csrf_token %} 
+					<input type="submit" value="Delete">
+				</form>
+				</li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			You haven't bought anything! That's very fiscally responsible.
+		{% endif %}
+	</div>
+
+	<footer>
+		<div name="debugBox">
+			<h4>Debug Info</h4><br>
+			{{ worked }} <br>
+			
+		</div>
+	</footer>
+</div>
 </body>
 </html>

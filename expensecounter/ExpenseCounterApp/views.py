@@ -120,6 +120,28 @@ def get_percents(date_range_start, date_range_end):
     
     if (debug): print("The breakdown: " + str(breakdown['food_grocery']) + " " + str(breakdown['food_takeout']) + " " + str(breakdown['food_convenience']) + " " + str(breakdown['one_time_important']) + " " + str(breakdown['one_time_unimportant']) + " " + str(breakdown['recurring_important']) + " " + str(breakdown['recurring_unimportant']))
     
+    if (str(breakdown['food_grocery']).find('.') > -1): 
+        breakdown['food_grocery'] = str(breakdown['food_grocery'])[0:str(breakdown['food_grocery']).find('.') + 2]
+        
+    if (str(breakdown['food_takeout']).find('.') > -1): 
+        breakdown['food_takeout'] = str(breakdown['food_takeout'])[0:str(breakdown['food_takeout']).find('.') + 2]
+        
+    if (str(breakdown['food_convenience']).find('.') > -1): 
+        breakdown['food_convenience'] = str(breakdown['food_convenience'])[0:str(breakdown['food_convenience']).find('.') + 2]
+        
+    if (str(breakdown['one_time_important']).find('.') > -1): 
+        breakdown['one_time_important'] = str(breakdown['one_time_important'])[0:str(breakdown['one_time_important']).find('.') + 2]
+        
+    if (str(breakdown['one_time_unimportant']).find('.') > -1): 
+        breakdown['one_time_unimportant'] = str(breakdown['one_time_unimportant'])[0:str(breakdown['one_time_unimportant']).find('.') + 2]
+        
+    if (str(breakdown['recurring_important']).find('.') > -1): 
+        breakdown['recurring_important'] = str(breakdown['recurring_important'])[0:str(breakdown['recurring_important']).find('.') + 2]
+        
+    if (str(breakdown['recurring_unimportant']).find('.') > -1): 
+        breakdown['recurring_unimportant'] = str(breakdown['recurring_unimportant'])[0:str(breakdown['recurring_unimportant']).find('.') + 2]
+        
+    
     return breakdown
     
     
