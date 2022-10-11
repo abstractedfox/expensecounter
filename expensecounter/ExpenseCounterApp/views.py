@@ -10,7 +10,66 @@ from django.utils import timezone
 
 debugLog = {}
 
+strings_en = {"appTitle": "Expense Counter",
+"breakdown_header": "Total breakdown:",
+"newitem_header": "Add something:",
+"item_list_header": "Expense items:",
+
+"food_grocery_text": "Food: Grocery",
+"food_takeout_text": "Food: Takeout",
+"food_convenience_text": "Food: Convenience Store",
+"one_time_important_text": "One Time Expense (Important)",
+"one_time_unimportant_text": "One Time Expense (Unimportant)",
+"recurring_important_text": "Recurring Expense (Important)",
+"recurring_unimportant_text": "Recurring Expense (Unimportant)",
+
+"date_form_start_date": "Start date:",
+"date_form_end_date": "End date:",
+
+"newitem_form_category": "Category:",
+"newitem_form_name": "Name:",
+"newitem_form_description": "Description:",
+"newitem_form_cost": "Cost:",
+"newitem_form_time_purchased": "Bought on:",
+"newitem_form_time_added": "Added on:",
+
+"button_go": "Go",
+"button_submit": "Submit",
+"button_delete": "Delete",
+
+"no_purchases": "You haven't bought anything! That's very fiscally responsible."}
+
+strings_jp = {"appTitle": "費用カウンタ",
+"breakdown_header": "費用分配:",
+"newitem_header": "要素を追加:",
+"item_list_header": "内訳:",
+
+"food_grocery_text": "食べ物：グロセリー",
+"food_takeout_text": "食べ物：テイクアウト",
+"food_convenience_text": "食べ物：コンビニ",
+"one_time_important_text": "一回の費用 (大切)",
+"one_time_unimportant_text": "一回の費用 (大切ない)",
+"recurring_important_text": "経常費 (大切)",
+"recurring_unimportant_text": "経常費 (大切ない)",
+
+"date_form_start_date": "始めのデート:",
+"date_form_end_date": "終了のデート:",
+
+"newitem_form_category": "カテゴリー:",
+"newitem_form_name": "物:",
+"newitem_form_description": "説明:",
+"newitem_form_cost": "お値段:",
+"newitem_form_time_purchased": "買い時:",
+"newitem_form_time_added": "追加時:",
+
+"button_go": "投入",
+"button_submit": "投入",
+"button_delete": "消す",
+
+"no_purchases": "買い物ありません！おめでとうございます。"}
+
 appTitle = "Expense Counter" #app name displayed to the user
+language = "english" #reference when deciding which language dict to load
 
 def index(request):
     template = loader.get_template('ExpenseCounterApp/index.html')
@@ -27,9 +86,18 @@ def index(request):
                 'app_title': appTitle,
                 'date_range_start': date_range_start,
                 'date_range_end': date_range_end,
-                'breakdown_percents': get_percents(date_range_start, date_range_end)}
+                'breakdown_percents': get_percents(date_range_start, date_range_end),
+                'today': timezone.now(),
+                'strings': strings_en}
+                
+    if (language == "english"): 
+        context['strings'] = strings_en
+        print("ENGLISH")
+    if (language == "japanese"): 
+        context['strings'] = strings_jp
+        print("JAPAN")
     
-    if request.method == "POST":
+    if request.method == "POST": #add item
         if request.POST.get('name'):
             newitem = expense_item()
             newitem.category = request.POST.get('categoryDropDown')
@@ -41,10 +109,11 @@ def index(request):
             
             newitem.save()
             context['worked'] = "POST data was sent"
+            context['breakdown_percents'] = get_percents(date_range_start, date_range_end)
             
             return HttpResponse(template.render(context, request))
             
-        if request.POST.get('startDate'):
+        if request.POST.get('startDate'): #change date view
         #format_date_for_html isn't necessary here because the dates are being read from the form in the POST data, so they're already formatted correctly
             date_range_start = request.POST.get('startDate')
             date_range_end = request.POST.get('endDate')
@@ -67,12 +136,20 @@ def index(request):
     return HttpResponse(template.render(context, request))
     
 def deleteitem(request, dbkey):
-        object = expense_item.objects.get(id=dbkey)
-        logoutput("Deleting: " + object.name)
-        object.delete()
-        return redirect('/index')
+    object = expense_item.objects.get(id=dbkey)
+    logoutput("Deleting: " + object.name)
+    object.delete()
+    return redirect('/index')
 
-
+#Valid languages are "english" and "japanese"
+def set_language(request, setlanguage):
+    if (setlanguage == "english" or setlanguage == "japanese"):
+        global language
+        language = setlanguage
+    return redirect('/index')
+    
+def test(request):
+    return HttpResponse("Hello")
 
 
                 #Things that aren't views:
@@ -108,6 +185,8 @@ def get_percents(date_range_start, date_range_end):
     'one_time_unimportant': Decimal(0),
     'recurring_important': Decimal(0),
     'recurring_unimportant': Decimal(0)}
+    
+    if total_spend == 0: return breakdown;
     
     
     breakdown['food_grocery'] = (get_total_spend(date_range_start, date_range_end, "food_grocery") / total_spend) * 100
