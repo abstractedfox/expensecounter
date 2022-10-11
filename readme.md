@@ -4,4 +4,5 @@ This is a lightweight app for counting personal expenses, with a simple hand-cod
 
 Japanese language support was just added as well. いつでも、自然じゃないの言葉があれば教えて下さい。
 
-'expensecounter' is the root app, with the actual app being 'ExpenseCounterApp'. Migrations will need to be made to set up the sqlite database. 
+'expensecounter' is the root app, with the actual app being 'ExpenseCounterApp'. It will be necessary to run this command to initialize the database tables:
+	py manage.py migrate --run-syncdb
