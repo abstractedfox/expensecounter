@@ -62,7 +62,7 @@
 			recurringUnimportantSize = computedstyles.getPropertyValue('--default-percent-size');
 		}
 		else{
-			csstime.style.setProperty('--recurringUnimportantSize', {{ breakdown_percents.recurring_unimportant }} * sizemultiple);
+			csstime.style.setProperty('--recurring-unimportant-size', {{ breakdown_percents.recurring_unimportant }} * sizemultiple);
 		}
 		
 	</script>
@@ -70,89 +70,101 @@
 <body>
 <div id="pagecontainer">
 	<header>
-	<h1 id = "appTitle">{{ app_title }}</h1>
+	<div id="language-select"><a href="{% url 'ExpenseCounterApp:set-language' 'english' %}">En</a> / <a href="{% url 'ExpenseCounterApp:set-language' 'japanese' %}">Jp</a></div>
+	<h1 id = "appTitle">{{ strings.appTitle }}</h1>
 	</header>
 	<br><br>
+	
 	<form action="" method="POST" id = "dateform">
 		{% csrf_token %}
-			<div class="datelabel"><label for="startDate">Start date:</label><input name="startDate" type="date" value="{{ date_range_start }}"></div>
-			<div class="datelabel"><label for="endDate">End date:</label><input name="endDate" type="date" value="{{ date_range_end }}">
-			<input type="submit" value="Go"></div>
+			<div class="datelabel"><label for="startDate">{{ strings.date_form_start_date }}</label><input name="startDate" type="date" value="{{ date_range_start }}"></div>
+			<div class="datelabel"><label for="endDate">{{ strings.date_form_end_date }}</label><input name="endDate" type="date" value="{{ date_range_end }}">
+			<input type="submit" value="{{ strings.button_go }}"></div>
 	</form>
 
+	
+	<h3>{{ strings.breakdown_header }}</h3><br>
 	<div id="percentages-display">
-		<h3>Total breakdown:</h3><br>
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">Food: Grocery:</div><div id="food-grocery-percent">{{ breakdown_percents.food_grocery }}%</div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.food_grocery_text }}:</div><div id="food-grocery-percent">{{ breakdown_percents.food_grocery }}%</div></div>
 		
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">Food: Takeout:</div><div id="food-takeout-percent">{{ breakdown_percents.food_takeout }}% </div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.food_takeout_text }}:</div><div id="food-takeout-percent">{{ breakdown_percents.food_takeout }}% </div></div>
 		
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">Food: Convenience Store:</div><div id="food-convenience-percent">{{ breakdown_percents.food_convenience }}%</div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.food_convenience_text }}:</div><div id="food-convenience-percent">{{ breakdown_percents.food_convenience }}%</div></div>
 		
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">One Time Expense (Important):</div><div id="one-time-important-percent">{{ breakdown_percents.one_time_important }}%</div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.one_time_important_text }}:</div><div id="one-time-important-percent">{{ breakdown_percents.one_time_important }}%</div></div>
 		
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">One Time Expense (Unimportant):</div><div id="one-time-unimportant-percent">{{ breakdown_percents.one_time_unimportant }}%</div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.one_time_unimportant_text }}:</div><div id="one-time-unimportant-percent">{{ breakdown_percents.one_time_unimportant }}%</div></div>
 		
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">Recurring Expense (Important):</div><div id="recurring-important-percent">{{ breakdown_percents.recurring_important }}%</div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.recurring_important_text}}:</div><div id="recurring-important-percent">{{ breakdown_percents.recurring_important }}%</div></div>
 		
-		<div class="breakdown-item-container"><div name="percentageDisplayLine">Recurring Expense (Unimportant):</div><div id="recurring-unimportant-percent">{{ breakdown_percents.recurring_unimportant }}%</div></div>
+		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.recurring_unimportant_text }}:</div><div id="recurring-unimportant-percent">{{ breakdown_percents.recurring_unimportant }}%</div></div>
 	</div>
 
 	<br><br>
 
-	<div id="newItemForm">
-		<h3>Add something:</h3>
-		<form action="" method="POST">
-		{% csrf_token %}
-		<label for="categoryDropDown">Category:</label>
-			<select name="categoryDropDown">
-				<option value="food_grocery">Food: Grocery</option>
-				<option value="food_takeout">Food: Takeout</option>
-				<option value="food_convenience">Food: Convenience Store</option>
-				<option value="one_time_important">One Time Expense (Important)</option>
-				<option value="one_time_unimportant">One Time Expense (Unimportant)</option>
-				<option value="recurring_important">Recurring Expense (Important)</option>
-				<option value="recurring_unimportant">Recurring Expense (Unimportant)</option>
-			</select>
-		</label>
-		<br>
-		<label for="name">Name:</label><br>
-		<input type="text" name="name"/><br>
-		
-		<label for="description">Description:</label><br>
-		<input type="text" name="description"/><br>
-		
-		<label for="cost">Cost:</label><br>
-		<input type="number" name="cost" step="any"/><br>
-		
-		<label for="purchase_time">Time purchased:</label>
-		<input type="date" name="purchase_time"/><br>
-		
-		<br>
-		<input type="submit" value="Submit">
+	<div id="new-item-form"> <!-- Add Something form -->
+		<h3>{{ strings.newitem_header }}</h3>
+		<form action="" method="POST" class="flex-row">
+			{% csrf_token %}
+			<div class="flex-row-item">
+				<label for="categoryDropDown">{{ strings.newitem_form_category }}</label>
+					<select name="categoryDropDown">
+						<option value="food_grocery">{{ strings.food_grocery_text }}</option>
+						<option value="food_takeout">{{ strings.food_takeout_text }}</option>
+						<option value="food_convenience">{{ strings.food_convenience_text }}</option>
+						<option value="one_time_important">{{ strings.one_time_important_text }}</option>
+						<option value="one_time_unimportant">{{ strings.one_time_unimportant_text }}</option>
+						<option value="recurring_important">{{ strings.recurring_important_text }}</option>
+						<option value="recurring_unimportant">{{ strings.recurring_unimportant_text }}</option>
+					</select>
+				</label>
+			</div>
+			<br>
+			<label for="name">{{ strings.newitem_form_name }}</label><br>
+			<input type="text" name="name"/><br>
+			
+			<label for="description">{{ strings.newitem_form_description }}</label><br>
+			<input type="text" name="description"/><br>
+			
+			<label for="cost">{{ strings.newitem_form_cost }}</label><br>
+			<input type="number" name="cost" step="any" class="costinput"/><br>
+			
+			<label for="purchase_time">{{ strings.newitem_form_time_purchased }}</label>
+			<input type="date" name="purchase_time" value="{{ today|date:'Y-m-d' }}"/><br>
+			
+			<br>
+			<input type="submit" value="{{ strings.button_submit }}">
 		</form>
 	</div>
 
 	<br><br>
 
 	<div id="itemList">
-		<h3>Expense items:</h3><br>
-		
-
+		<h3>{{ strings.item_list_header }}</h3> <!-- Expense items: -->
+		<br>
 		{% if expense_items %}
-			
 			<ul>
 			{% for expense_item in expense_items %}
-				<li>{{expense_item.category}}: ${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" 
-				Bought on: {{ expense_item.purchase_time }} Added on: {{ expense_item.time_added }}
+				<li>{# {{expense_item.category}} #}
+				{% if expense_item.category == "food_grocery" %}<div class="food-grocery-color">{{ strings.food_grocery_text }}
+				{% elif expense_item.category == "food_takeout" %}<div class="food-takeout-color">{{ strings.food_takeout_text }}
+				{% elif expense_item.category == "food_convenience" %}<div class="food-convenience-color">{{ strings.food_convenience_text }}
+				{% elif expense_item.category == "one_time_important" %}<div class="one-time-important-color">{{ strings.one_time_important_text }}
+				{% elif expense_item.category == "one_time_unimportant" %}<div class="one-time-unimportant-color">{{ strings.one_time_unimportant_text }}
+				{% elif expense_item.category == "recurring_important" %}<div class="recurring-important-color">{{ strings.recurring_important_text }}
+				{% elif expense_item.category == "recurring_unimportant" %}<div class="recurring-unimportant-color">{{ strings.recurring_unimportant_text}}
+				{% endif %}</div>
+				${{ expense_item.cost }} {{ expense_item.name }} "{{ expense_item.description }}" 
+				{{ strings.newitem_form_time_purchased }} {{ expense_item.purchase_time|date:'m-d-y' }} {{ strings.newitem_form_time_added }} {{ expense_item.time_added }}
 				<form action="deleteitem/{{ expense_item.pk }}" method="POST">
 					{% csrf_token %} 
-					<input type="submit" value="Delete">
+					<input type="submit" value="{{ strings.button_delete }}">
 				</form>
 				</li>
 			{% endfor %}
 			</ul>
 		{% else %}
-			You haven't bought anything! That's very fiscally responsible.
+			{{ strings.no_purchases }} <!-- You haven't bought anything! That's very fiscally responsible. -->
 		{% endif %}
 	</div>
 

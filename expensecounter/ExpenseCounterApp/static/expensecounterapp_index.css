@@ -1,6 +1,7 @@
 :root{
 	--page-bg: #ffffff;
 	--inner-bg: #eeeeee;
+	--darker-bg: #dddddd;
 	
 	--default-percent-size: 12;
 	--default-percent-font: "Arial Black";
@@ -66,6 +67,43 @@ body {
 	color: var(--recurring-unimportant-color);
 }
 
+.food-grocery-color{
+	color: var(--food-grocery-color);
+	font-weight: bold;
+}
+.food-takeout-color{
+	color: var(--food-takeout-color);
+	font-weight: bold;
+}
+.food-convenience-color{
+	color: var(--food-convenience-color);
+	font-weight: bold;
+}
+.one-time-important-color{
+	color: var(--one-time-important-color);
+	font-weight: bold;
+}
+.one-time-unimportant-color{
+	color: var(--one-time-unimportant-color);
+	font-weight: bold;
+}
+.recurring-important-color{
+	color: var(--recurring-important-color);
+	font-weight: bold;
+}
+.recurring-unimportant-color{
+	color: var(--recurring-unimportant-color);
+	font-weight: bold;
+}
+
+h3{
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-bottom: 0.5vw;
+	font-size: 1.3vw;
+	font-style: italic;
+}
+
 @media (min-width: 1024px){
 	#pagecontainer{
 		margin-left: auto;
@@ -82,15 +120,35 @@ body {
 		padding-right: var(--inner-margin);
 	}
 	
+	#language-select{
+		margin-right: 0px;
+		margin-left: auto;
+		text-align: right;
+	}
+	
+	a {
+		color: #222222;
+	}
+	a.visited{
+		color: #222222;
+	}
+	
+	#percentages-display{
+		margin-left: auto;
+		margin-right: auto;
+		width: 52vw;
+	}
+	
 	.breakdown-item-container{
 		display:flex;
 		align-items: center;
-		
 	}
 	
 	h1{
 		text-align: center;
 		font-size: 5vw;
+		margin-top: 2vw;
+		margin-bottom: 1vw;
 	}
 	
 	#dateform{
@@ -105,6 +163,24 @@ body {
 	.datelabel{
 		margin-left: auto;
 		margin-right: auto;
+	}
+	
+	#new-item-form{
+	}
+	
+	.flex-row{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin: 1vw;
+	}
+	
+	#new-item-form select{
+		width: 15em;
+	}
+	
+	#new-item-form .costinput{
+		width: 6em;
 	}
 }
 
