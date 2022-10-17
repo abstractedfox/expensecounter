@@ -22,6 +22,7 @@ strings_en = {"appTitle": "Expense Counter",
 "one_time_unimportant_text": "One Time Expense (Unimportant)",
 "recurring_important_text": "Recurring Expense (Important)",
 "recurring_unimportant_text": "Recurring Expense (Unimportant)",
+"total_spend_text": "Total spend: ",
 
 "date_form_start_date": "Start date:",
 "date_form_end_date": "End date:",
@@ -51,6 +52,7 @@ strings_jp = {"appTitle": "費用カウンタ",
 "one_time_unimportant_text": "一回の費用 (大切ない)",
 "recurring_important_text": "経常費 (大切)",
 "recurring_unimportant_text": "経常費 (大切ない)",
+"total_spend_text": "ASDF",
 
 "date_form_start_date": "始めのデート:",
 "date_form_end_date": "終了のデート:",
@@ -81,6 +83,8 @@ def index(request):
     
     ordered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
     
+    total_spend = get_total_spend(date_range_start, date_range_end, "all")
+    
     context = {'expense_items': ordered_db,
                 'worked': "Default value",
                 'app_title': appTitle,
@@ -88,7 +92,8 @@ def index(request):
                 'date_range_end': date_range_end,
                 'breakdown_percents': get_percents(date_range_start, date_range_end),
                 'today': timezone.now(),
-                'strings': strings_en}
+                'strings': strings_en,
+                'total_spend': total_spend}
                 
     if (language == "english"): 
         context['strings'] = strings_en
@@ -110,6 +115,7 @@ def index(request):
             newitem.save()
             context['worked'] = "POST data was sent"
             context['breakdown_percents'] = get_percents(date_range_start, date_range_end)
+            context['total_spend'] = get_total_spend(date_range_start, date_range_end, "all")
             
             return HttpResponse(template.render(context, request))
             
@@ -127,6 +133,7 @@ def index(request):
             print("Start date:" + date_range_start)
             print("End date:" + date_range_end)
             context['worked'] = "Date range POST data was sent"
+            context['total_spend'] = get_total_spend(date_range_start, date_range_end, "all")
             
             percents = get_percents(date_range_start, date_range_end)
             

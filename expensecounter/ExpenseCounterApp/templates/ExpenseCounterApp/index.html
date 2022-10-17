@@ -82,7 +82,6 @@
 			<input type="submit" value="{{ strings.button_go }}"></div>
 	</form>
 
-	
 	<h3>{{ strings.breakdown_header }}</h3><br>
 	<div id="percentages-display">
 		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.food_grocery_text }}:</div><div id="food-grocery-percent">{{ breakdown_percents.food_grocery }}%</div></div>
@@ -98,6 +97,8 @@
 		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.recurring_important_text}}:</div><div id="recurring-important-percent">{{ breakdown_percents.recurring_important }}%</div></div>
 		
 		<div class="breakdown-item-container"><div name="percentageDisplayLine">{{ strings.recurring_unimportant_text }}:</div><div id="recurring-unimportant-percent">{{ breakdown_percents.recurring_unimportant }}%</div></div>
+		
+		<div class="breakdown-item-container">{{ strings.total_spend_text }}<div id="total-spend-value"> ${{ total_spend }}</div></div>
 	</div>
 
 	<br><br>
