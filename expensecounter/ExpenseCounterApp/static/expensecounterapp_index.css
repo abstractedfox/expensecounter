@@ -31,6 +31,11 @@ body {
 	font-family: Arial, sans-serif;
 }
 
+#total-spend-value{
+	font-family: var(--default-percent-font);
+	font-size: var(--food-grocery-size);
+}
+
 #food-grocery-percent{
 	font-family: var(--default-percent-font);
 	font-size: var(--food-grocery-size);
@@ -181,6 +186,10 @@ h3{
 	
 	#new-item-form .costinput{
 		width: 6em;
+	}
+	
+	#total-spend-value{
+		font-size: 20;
 	}
 }
 
