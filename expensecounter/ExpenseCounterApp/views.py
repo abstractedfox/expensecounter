@@ -6,6 +6,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import expense_item
 from django.utils import timezone
+
+from django.core import management #In case the database needs to be built
 # Create your views here.
 
 debugLog = {}
@@ -22,7 +24,7 @@ strings_en = {"appTitle": "Expense Counter",
 "one_time_unimportant_text": "One Time Expense (Unimportant)",
 "recurring_important_text": "Recurring Expense (Important)",
 "recurring_unimportant_text": "Recurring Expense (Unimportant)",
-"total_spend_text": "Total spend: ",
+"total_spend_text": "Total spend",
 
 "date_form_start_date": "Start date:",
 "date_form_end_date": "End date:",
@@ -52,7 +54,7 @@ strings_jp = {"appTitle": "費用カウンタ",
 "one_time_unimportant_text": "一回の費用 (大切ない)",
 "recurring_important_text": "経常費 (大切)",
 "recurring_unimportant_text": "経常費 (大切ない)",
-"total_spend_text": "ASDF",
+"total_spend_text": "総",
 
 "date_form_start_date": "始めのデート:",
 "date_form_end_date": "終了のデート:",
@@ -74,16 +76,22 @@ appTitle = "Expense Counter" #app name displayed to the user
 language = "english" #reference when deciding which language dict to load
 
 def index(request):
+    
     template = loader.get_template('ExpenseCounterApp/index.html')
     
-    two_weeks_ago_interval = datetime.timedelta(days=14)
-    two_weeks_ago = timezone.now() - two_weeks_ago_interval
-    date_range_start = format_date_for_html(two_weeks_ago)
-    date_range_end = format_date_for_html(timezone.now())
-    
-    ordered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
-    
-    total_spend = get_total_spend(date_range_start, date_range_end, "all")
+    try:
+        two_weeks_ago_interval = datetime.timedelta(days=14)
+        two_weeks_ago = timezone.now() - two_weeks_ago_interval
+        date_range_start = format_date_for_html(two_weeks_ago)
+        date_range_end = format_date_for_html(timezone.now())
+        ordered_db = expense_item.objects.filter(purchase_time__range=[date_range_start, date_range_end])
+        total_spend = get_total_spend(date_range_start, date_range_end, "all")
+    except:
+        print("Exception thrown in views.index(request); database may not be initialized. Migrations will be applied and the page will be reloaded.")
+        management.call_command("makemigrations")
+        management.call_command("migrate", "--run-syncdb")
+        return index(request)
+        
     
     context = {'expense_items': ordered_db,
                 'worked': "Default value",
